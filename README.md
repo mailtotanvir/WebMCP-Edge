@@ -46,8 +46,8 @@ flowchart TD
     TOOLS --> LOG[Optional in-memory invocation log]
     OUTPUT --> PANEL[Research panel]
     LOG --> PANEL
-    style NATIVE fill:#241a05,stroke:#FFC46B
-    style HARNESS fill:#0a1f14,stroke:#46E39B
+    style NATIVE fill:#241a05,stroke:#FFC46B,color:#F8FAFC
+    style HARNESS fill:#0a1f14,stroke:#46E39B,color:#F8FAFC
 ```
 
 Design choices:
