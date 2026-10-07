@@ -1,0 +1,89 @@
+
+> cuda-visual-encyclopedia@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.32
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/176) ...
+   Generating static pages (44/176) 
+   Generating static pages (88/176) 
+   Generating static pages (132/176) 
+ ✓ Generating static pages (176/176)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                     Size     First Load JS
+┌ ○ /                                           8.49 kB         108 kB
+├ ○ /_not-found                                 138 B          87.5 kB
+├ ○ /atlas                                      5.86 kB         102 kB
+├ ● /atlas/[id]                                 6.78 kB         103 kB
+├   ├ /atlas/banks
+├   ├ /atlas/occupancy
+├   ├ /atlas/tiling
+├   └ [+4 more paths]
+├ ○ /cuda                                       470 B           100 kB
+├ ○ /descent                                    3.48 kB        90.8 kB
+├ ○ /evals                                      470 B           100 kB
+├ ○ /evals/atlas                                6.08 kB         102 kB
+├ ● /evals/scenes/[id]                          30.3 kB         126 kB
+├   ├ /evals/scenes/eval-loop
+├   ├ /evals/scenes/capability-vs-alignment
+├   ├ /evals/scenes/static-vs-dynamic
+├   └ [+21 more paths]
+├ ○ /inference                                  470 B           100 kB
+├ ○ /inference/atlas                            6.91 kB         103 kB
+├ ● /inference/scenes/[id]                      35.1 kB         131 kB
+├   ├ /inference/scenes/decode-loop
+├   ├ /inference/scenes/prefill-decode
+├   ├ /inference/scenes/latency-timeline
+├   └ [+21 more paths]
+├ ○ /infra                                      470 B           100 kB
+├ ○ /infra/atlas                                7.55 kB         104 kB
+├ ● /infra/scenes/[id]                          34.9 kB         131 kB
+├   ├ /infra/scenes/nvlink-topology
+├   ├ /infra/scenes/pcie-cxl-bottleneck
+├   ├ /infra/scenes/hbm-memory-wall
+├   └ [+21 more paths]
+├ ○ /launch                                     8.61 kB         105 kB
+├ ○ /posttrain                                  470 B           100 kB
+├ ○ /posttrain/atlas                            6.33 kB         102 kB
+├ ● /posttrain/scenes/[id]                      33.3 kB         129 kB
+├   ├ /posttrain/scenes/sft-basics
+├   ├ /posttrain/scenes/sft-targets
+├   ├ /posttrain/scenes/peft-lora
+├   └ [+21 more paths]
+├ ○ /safety                                     177 B          96.2 kB
+├ ○ /safety/atlas                               7.62 kB         104 kB
+├ ● /safety/scenes/[id]                         41.9 kB         138 kB
+├   ├ /safety/scenes/many-shot-jailbreaking
+├   ├ /safety/scenes/adversarial-suffixes-gcg
+├   ├ /safety/scenes/prompt-injection-indirect
+├   └ [+21 more paths]
+├ ○ /scenes/challenge                           3.97 kB         100 kB
+├ ○ /scenes/debug                               4.61 kB         101 kB
+├ ○ /scenes/meet-the-gpu                        3.34 kB        99.4 kB
+├ ○ /scenes/memory                              4.72 kB         101 kB
+├ ○ /scenes/the-problem                         3.98 kB         100 kB
+├ ○ /scenes/thread-indexing                     4.17 kB         100 kB
+├ ○ /scenes/threads                             3.01 kB        99.1 kB
+├ ○ /scenes/warps                               4.13 kB         100 kB
+├ ○ /training                                   469 B           100 kB
+├ ○ /training/atlas                             5.33 kB         101 kB
+└ ● /training/scenes/[id]                       24.3 kB         120 kB
+    ├ /training/scenes/token-diet
+    ├ /training/scenes/clm-vs-mlm
+    ├ /training/scenes/one-step
+    └ [+18 more paths]
++ First Load JS shared by all                   87.4 kB
+  ├ chunks/117-5cae6dcf0dbcf180.js              31.8 kB
+  ├ chunks/fd9d1056-5195715fa9edc857.js         53.6 kB
+  └ other shared chunks (total)                 1.95 kB
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses getStaticProps)
+
