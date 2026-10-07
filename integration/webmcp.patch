@@ -1,0 +1,283 @@
+diff --git a/README.md b/README.md
+index 74c1d85..4579787 100644
+--- a/README.md
++++ b/README.md
+@@ -355,3 +355,7 @@ The exported site is written to `out/` and requires no application server.
+ [Launch the encyclopedia](https://mailtotanvir.github.io/AI-Engineering-Visual-Guide/)
+ 
+ </div>
++
++## Experimental WebMCP research adapter
++
++CUDA and Inference Atlas entries are exposed through three browser-side tools. Open “Agent-native web · research mode” for local harness calls, native status, schemas, and opt-in local logs. Native support is experimental and unverified; ordinary browsing has no WebMCP dependency. See [the research note](docs/webmcp-experiment.md) for architecture, requirements, security, and limitations.
+diff --git a/app/globals.css b/app/globals.css
+index 5173055..093a2b3 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -423,3 +423,6 @@ a.dot.on{background:var(--teal);border-color:var(--teal)}
+   .sidebarBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:95}
+ }
+ 
++
++/* Optional research surface; uses the encyclopedia's existing tokens. */
++.webmcpPanel{margin:24px;padding:18px;border:1px solid var(--line);color:var(--ink2);font-size:14px;max-width:900px}.webmcpPanel summary{cursor:pointer;color:var(--ink);font-family:var(--font-m)}.webmcpPanel pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:350px;overflow:auto}.webmcpPanel textarea{display:block;width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:10px}.webmcpPanel button,.webmcpPanel select{background:var(--bg);color:var(--ink);border:1px solid var(--line);padding:8px;margin:5px}.topicCard[data-agent-match]{outline:2px solid var(--cyan);outline-offset:3px}
+diff --git a/components/atlas/AtlasBrowser.tsx b/components/atlas/AtlasBrowser.tsx
+index 8c3b80a..a5c8406 100644
+--- a/components/atlas/AtlasBrowser.tsx
++++ b/components/atlas/AtlasBrowser.tsx
+@@ -1,11 +1,13 @@
+ "use client";
+ import Link from "next/link";
++import { useAtlasSelection } from "@/components/webmcp/useAtlasSelection";
+ import React, { useState } from "react";
+ import { DOMAINS, DOMAIN_COLORS, TOPICS } from "@/content/cuda/atlas";
+ 
+ export default function AtlasBrowser() {
+   const [domain, setDomain] = useState("threads");
+   const [openId, setOpenId] = useState<string | null>(null);
++  const matches = useAtlasSelection("cuda", TOPICS, setDomain, setOpenId);
+   const topics = TOPICS.filter((t) => t.domain === domain);
+ 
+   return (
+@@ -34,7 +36,7 @@ export default function AtlasBrowser() {
+           const open = openId === t.id;
+           const color = DOMAIN_COLORS[t.domain];
+           return (
+-            <article key={t.id} className={"topicCard" + (open ? " open" : "")} style={{ borderLeftColor: color }}>
++            <article data-agent-match={matches.includes(t.id) || undefined} key={t.id} className={"topicCard" + (open ? " open" : "")} style={{ borderLeftColor: color }}>
+               <header
+                 role="button"
+                 tabIndex={0}
+diff --git a/components/inference/InfAtlasBrowser.tsx b/components/inference/InfAtlasBrowser.tsx
+index ef9678d..ab0396c 100644
+--- a/components/inference/InfAtlasBrowser.tsx
++++ b/components/inference/InfAtlasBrowser.tsx
+@@ -1,5 +1,6 @@
+ "use client";
+ import Link from "next/link";
++import { useAtlasSelection } from "@/components/webmcp/useAtlasSelection";
+ import React, { useState } from "react";
+ import { INF_DOMAINS, INF_TOPICS } from "@/content/inference/atlas";
+ 
+@@ -17,6 +18,7 @@ const DOMAIN_COLORS: Record<string, string> = {
+ export default function InfAtlasBrowser() {
+   const [domain, setDomain] = useState("foundations");
+   const [openId, setOpenId] = useState<string | null>(null);
++  const matches = useAtlasSelection("inference", INF_TOPICS, setDomain, setOpenId);
+   const topics = INF_TOPICS.filter((t) => t.domain === domain);
+ 
+   return (
+@@ -41,7 +43,7 @@ export default function InfAtlasBrowser() {
+           const open = openId === t.id;
+           const color = DOMAIN_COLORS[t.domain];
+           return (
+-            <article key={t.id} className={"topicCard" + (open ? " open" : "")} style={{ borderLeftColor: color }}>
++            <article data-agent-match={matches.includes(t.id) || undefined} key={t.id} className={"topicCard" + (open ? " open" : "")} style={{ borderLeftColor: color }}>
+               <header role="button" tabIndex={0} aria-expanded={open}
+                 onClick={() => setOpenId(open ? null : t.id)}
+                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setOpenId(open ? null : t.id))}
+diff --git a/components/shell/AppShell.tsx b/components/shell/AppShell.tsx
+index d2d478d..51a99e6 100644
+--- a/components/shell/AppShell.tsx
++++ b/components/shell/AppShell.tsx
+@@ -1,6 +1,7 @@
+ "use client";
+ 
+ import Link from "next/link";
++import ResearchPanel from "@/components/webmcp/ResearchPanel";
+ import { usePathname } from "next/navigation";
+ import React, { useEffect, useRef, useState } from "react";
+ import { WORLDS, type World } from "@/content/worlds";
+@@ -285,6 +286,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
+         {/* Page Content */}
+         <div className="appMainWrapper">
+           {children}
++          <ResearchPanel />
+         </div>
+ 
+         {/* Footer */}
+diff --git a/components/webmcp/ResearchPanel.tsx b/components/webmcp/ResearchPanel.tsx
+new file mode 100644
+index 0000000..1f56046
+--- /dev/null
++++ b/components/webmcp/ResearchPanel.tsx
+@@ -0,0 +1,12 @@
++"use client";
++import {useEffect,useState} from "react";
++import {ACTIVITY,type Activity} from "@/lib/webmcp/activity";
++import {context,register} from "@/lib/webmcp/register";
++import {names,schemas,run,type Name} from "@/lib/webmcp/tools";
++export default function ResearchPanel(){
++ const [status,setStatus]=useState("Initializing"),[registered,setRegistered]=useState<Name[]>([]),[logs,setLogs]=useState<Activity[]>([]),[name,setName]=useState<Name>("search_articles"),[input,setInput]=useState('{"query":"GPU memory","limit":3}'),[result,setResult]=useState(""),[open,setOpen]=useState(false),[mode,setMode]=useState("local harness");
++ useEffect(()=>{const controller=new AbortController();const ctx=context();if(!ctx){setStatus("Unavailable");return;} register(ctx,controller.signal,n=>setRegistered(r=>[...r,n])).then(()=>{if(!controller.signal.aborted)setStatus("Registered");}).catch(e=>{controller.abort();setRegistered([]);setStatus("Registration failed: "+String(e));});return()=>controller.abort();},[]);
++ useEffect(()=>{if(!open)return;const listener=(e:Event)=>setLogs(l=>[...l,(e as CustomEvent<Activity>).detail].slice(-100));window.addEventListener(ACTIVITY,listener);return()=>window.removeEventListener(ACTIVITY,listener);},[open]);
++ async function execute(){try{const args=JSON.parse(input);if(mode === "native"){const ctx=context();if(!ctx?.getTools||!ctx.executeTool)throw new Error("Native discovery/execution unavailable");const tool=(await ctx.getTools()).find(t=>t.name===name);if(!tool)throw new Error("Tool not discovered");const raw=await ctx.executeTool(tool,args);setResult(JSON.stringify(JSON.parse(raw),null,2));}else setResult(JSON.stringify(await run(name,args,"local harness"),null,2));}catch(e){setResult(String(e));}}
++ return <details className="webmcpPanel" onToggle={e=>setOpen(e.currentTarget.open)}><summary>Agent-native web · research mode</summary><p>Experimental WebMCP · evolving community-group draft, not a W3C Standard or on the Standards Track.</p><p role="status">Native status: {status}. Registered: {registered.join(", ")||"none"}</p><p>DOM → inferred capabilities · WebMCP → declared capabilities. Tools read real CUDA/Inference Atlas content. Calls may highlight temporary UI state. No backend or remote telemetry.</p><label>Execution mode <select value={mode} onChange={e=>setMode(e.target.value)}><option>local harness</option><option value="native">native</option></select></label><p>Local harness verifies application logic; it does not demonstrate native discovery or a browser agent.</p><label>Tool <select value={name} onChange={e=>{const n=e.target.value as Name;setName(n);setInput(n === "search_articles"?'{"query":"GPU memory","limit":3}':n === "get_article"?'{"id":"cuda:atlas:sms"}':'{"id":"cuda:atlas:sms","format":"APA"}');}}>{names.map(n=><option key={n}>{n}</option>)}</select></label><details><summary>Input schema</summary><pre>{JSON.stringify(schemas[name],null,2)}</pre></details><label>JSON arguments<textarea value={input} onChange={e=>setInput(e.target.value)} rows={4}/></label><button onClick={execute}>Execute</button><pre aria-live="polite">{result}</pre><p>Local log: last 100 calls while this panel is open. Inputs may contain personal text; review before sharing.</p><button onClick={()=>setLogs([])}>Clear log</button> <button onClick={()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(logs,null,2)],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download="webmcp-local-log.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}>Export log</button><pre>{JSON.stringify(logs,null,2)}</pre></details>;
++}
+diff --git a/components/webmcp/useAtlasSelection.ts b/components/webmcp/useAtlasSelection.ts
+new file mode 100644
+index 0000000..3ac8d65
+--- /dev/null
++++ b/components/webmcp/useAtlasSelection.ts
+@@ -0,0 +1,11 @@
++"use client";
++import {useEffect,useState} from "react";
++import {SELECTION,type Selection} from "@/lib/webmcp/activity";
++export function useAtlasSelection(world:string,topics:{id:string;domain:string}[],setDomain:(s:string)=>void,setOpen:(s:string|null)=>void){
++ const [matches,setMatches]=useState<string[]>([]);
++ useEffect(()=>{
++  function reveal(ids:string[]){const prefix=world+":atlas:";const local=ids.filter(id=>id.startsWith(prefix)).map(id=>id.slice(prefix.length));setMatches(local);const first=topics.find(t=>t.id===local[0]);if(first){setDomain(first.domain);setOpen(first.id);}}
++  const initial=new URLSearchParams(window.location.search).get("entry");if(initial)reveal([world+":atlas:"+initial]);
++  const listener=(e:Event)=>reveal((e as CustomEvent<Selection>).detail.ids);window.addEventListener(SELECTION,listener);return()=>window.removeEventListener(SELECTION,listener);
++ },[world,topics,setDomain,setOpen]);return matches;
++}
+diff --git a/docs/webmcp-experiment.md b/docs/webmcp-experiment.md
+new file mode 100644
+index 0000000..6113cd7
+--- /dev/null
++++ b/docs/webmcp-experiment.md
+@@ -0,0 +1,23 @@
++# WebMCP experiment
++
++Experimental adapter for the 2 October 2026 WebMCP draft. Not a W3C Standard or on the Standards Track. Native browser interoperability has not yet been measured.
++
++The three tools search, retrieve, and cite real CUDA and Inference Atlas records. Existing source exports are projected into namespaced IDs; there is no separately authored dataset. Retrieval preserves summaries and technical points, including entries with no technical points. Search uses case-insensitive whitespace-separated lexical terms: four points for a title/domain substring and one for a summary/technical-text substring, summed across terms, then ID tie-break. It is OR-style matching, not semantic search. Default limit 5, maximum 10.
++
++Run `npm ci`, `npm test`, `npm run build`, and `npm run dev`. Open an Atlas or any page's “Agent-native web · research mode” disclosure. Use local harness for application checks. Native mode requires the actual `document.modelContext` draft implementation, including discovery/execution methods; it is never polyfilled or mislabeled as native.
++
++Registration starts in the shared client shell and aborts on teardown or partial failure. Registration and execution cancellation use separate signals. Tools have no external side effects; search and retrieval may change temporary Atlas selection. No readOnlyHint is asserted because that hint promises no state modification. No cross-origin exposure is requested.
++
++Tool output is a JSON-serializable object. Native executeTool accepts a discovered RegisteredTool object and returns the serialized string. The panel parses that string. Every input is validated at runtime; invalid IDs and arguments reject. Browser error presentation may depend on implementation.
++
++Citation convention: title-first, actual site title and canonical URL, no invented author/publication/access date. APA uses n.d.; MLA omits unavailable date. Chicago output is a bibliographic rendering with a missing-access-date note, not a claim of completeness under every citation guide. Sources cited inside entries are not their authors.
++
++Logs are bounded to 100 invocations while research mode is open, held in memory, cleared on page teardown, and exported only on explicit request. Closing the panel stops recording but retains its existing in-memory log until cleared. Review inputs before sharing. There is no server telemetry.
++
++Trust: schema validation is not authorization. Page descriptions/content are an agent interaction surface. Content is rendered as text. No secrets, write tools, network actions, or LLM API are introduced. Mutating tools would need a separate consent and authorization design.
++
++The UI reveals matching entries only in the mounted Atlas; other-world results remain linked in structured output. Entry query links work on direct loads. A human may change selection after a tool call. The adapter does not automatically navigate or control simulations.
++
++Automated tests establish application contracts and mocked registration behavior. They cannot establish native interoperability or agent performance. See the companion research package for the predeclared protocol and honest validation report.
++
++Primary API reference: https://webmachinelearning.github.io/webmcp/
+diff --git a/lib/webmcp/activity.ts b/lib/webmcp/activity.ts
+new file mode 100644
+index 0000000..1484a52
+--- /dev/null
++++ b/lib/webmcp/activity.ts
+@@ -0,0 +1,5 @@
++export type Activity = { tool:string; timestamp:string; input:unknown; durationMs:number; success:boolean; count?:number; error?:string; mode:string };
++export type Selection = { ids:string[] };
++export const ACTIVITY = "webmcp:activity";
++export const SELECTION = "webmcp:selection";
++export function select(ids:string[]) { window.dispatchEvent(new CustomEvent(SELECTION,{detail:{ids}})); }
+diff --git a/lib/webmcp/content.ts b/lib/webmcp/content.ts
+new file mode 100644
+index 0000000..a79f766
+--- /dev/null
++++ b/lib/webmcp/content.ts
+@@ -0,0 +1,27 @@
++import { TOPICS, DOMAINS } from "@/content/cuda/atlas";
++import { INF_TOPICS, INF_DOMAINS } from "@/content/inference/atlas";
++export const SITE = "AI Engineering Visual Encyclopedia";
++export const ORIGIN = "https://mailtotanvir.github.io/AI-Engineering-Visual-Guide";
++export const articles = [
++  ...TOPICS.map(t => ({ ...t, world: "CUDA", domainTitle: DOMAINS.find(d => d.id === t.domain)!.name, scene: t.journey ?? null, id: `cuda:atlas:${t.id}`, sourceId: t.id, path: `/atlas/?entry=${encodeURIComponent(t.id)}` })),
++  ...INF_TOPICS.map(t => ({ ...t, world: "Inference", domainTitle: INF_DOMAINS.find(d => d.id === t.domain)!.name, scene: t.scene ?? null, id: `inference:atlas:${t.id}`, sourceId: t.id, path: `/inference/atlas/?entry=${encodeURIComponent(t.id)}` }))
++].map(t => ({ ...t, url: ORIGIN + t.path }));
++export function getArticle(id: string) {
++  const article = articles.find(a => a.id === id);
++  if (!article) throw new Error("Unknown article ID");
++  return article;
++}
++export function searchArticles(query: string, limit = 5) {
++  const terms = query.toLowerCase().trim().split(/\s+/);
++  return articles.map(a => {
++    const title = (a.title + " " + a.domainTitle).toLowerCase();
++    const text = (a.summary + " " + a.points.join(" ")).toLowerCase();
++    const score = terms.reduce((s, term) => s + (title.includes(term) ? 4 : 0) + (text.includes(term) ? 1 : 0), 0);
++    return { a, score };
++  }).filter(x => x.score > 0).sort((a,b) => b.score-a.score || a.a.id.localeCompare(b.a.id)).slice(0,limit).map(({ a }) => ({ id:a.id,title:a.title,world:a.world,scene:a.scene,summary:a.summary,path:a.path,url:a.url }));
++}
++export function citeArticle(id: string, format: string) {
++  const a = getArticle(id);
++  const citation = format === "APA" ? `${a.title}. (n.d.). ${SITE}. ${a.url}` : format === "MLA" ? `“${a.title}.” ${SITE}, ${a.url}.` : `“${a.title}.” ${SITE}. Access date not recorded. ${a.url}.`;
++  return { id, title:a.title, format, citation, url:a.url, metadataConvention:"Title-first; author and publication date unavailable. No access date invented." };
++}
+diff --git a/lib/webmcp/register.ts b/lib/webmcp/register.ts
+new file mode 100644
+index 0000000..48f0b26
+--- /dev/null
++++ b/lib/webmcp/register.ts
+@@ -0,0 +1,11 @@
++import { names, schemas, run, type Name } from "./tools";
++export type Registered = {name:string;[key:string]:unknown};
++export type Context = { registerTool:(tool:unknown, options:{signal:AbortSignal})=>Promise<void>; getTools?:()=>Promise<Registered[]>; executeTool?:(tool:Registered,input:object)=>Promise<string> };
++export function context():Context|undefined { return (document as Document & {modelContext?:Context}).modelContext; }
++export async function register(ctx:Context,signal:AbortSignal,onRegistered:(name:Name)=>void) {
++ for(const name of names) {
++  if(signal.aborted) return;
++  await ctx.registerTool({name,description:name === "search_articles" ? "Search real CUDA and Inference Atlas entries. Highlights matches in the active Atlas; does not change content." : name === "get_article" ? "Retrieve a real Atlas entry. Reveals it in the active Atlas without navigating." : "Cite a real Atlas entry using verified title and URL; author and publication date are unavailable.",inputSchema:schemas[name],execute:(input:unknown,options:{signal:AbortSignal})=>run(name,input,"native",options.signal)}, {signal});
++  if(!signal.aborted) onRegistered(name);
++ }
++}
+diff --git a/lib/webmcp/tools.ts b/lib/webmcp/tools.ts
+new file mode 100644
+index 0000000..c5984ac
+--- /dev/null
++++ b/lib/webmcp/tools.ts
+@@ -0,0 +1,36 @@
++import { searchArticles, getArticle, citeArticle } from "./content";
++import { ACTIVITY, select } from "./activity";
++export type Name = "search_articles" | "get_article" | "cite_article";
++export const schemas = {
++ search_articles:{type:"object",properties:{query:{type:"string",minLength:1,maxLength:300},limit:{type:"integer",minimum:1,maximum:10}},required:["query"],additionalProperties:false},
++ get_article:{type:"object",properties:{id:{type:"string",minLength:1}},required:["id"],additionalProperties:false},
++ cite_article:{type:"object",properties:{id:{type:"string",minLength:1},format:{type:"string",enum:["APA","MLA","Chicago"]}},required:["id","format"],additionalProperties:false}
++};
++export const names = Object.keys(schemas) as Name[];
++export function invoke(name:Name, input:unknown) {
++ if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("Arguments must be an object");
++ const a = input as Record<string,unknown>;
++ const allowed = name === "search_articles" ? ["query","limit"] : name === "get_article" ? ["id"] : ["id","format"];
++ if(Object.keys(a).some(k=>!allowed.includes(k))) throw new Error("Unexpected argument");
++ if(name === "search_articles") {
++  if(typeof a.query !== "string" || !a.query.trim() || a.query.length>300) throw new Error("Query must contain 1–300 characters");
++  if(a.limit !== undefined && (typeof a.limit !== "number" || !Number.isInteger(a.limit) || a.limit<1 || a.limit>10)) throw new Error("Limit must be an integer from 1 to 10");
++  return {results:searchArticles(a.query,a.limit as number|undefined)};
++ }
++ if(typeof a.id !== "string" || !a.id) throw new Error("ID is required");
++ if(name === "get_article") return getArticle(a.id);
++ if(!["APA","MLA","Chicago"].includes(a.format as string)) throw new Error("Invalid citation format");
++ return citeArticle(a.id,a.format as string);
++}
++export async function run(name:Name,input:unknown,mode:string,signal?:AbortSignal) {
++ const start=performance.now();
++ let success=false, error:string|undefined, count:number|undefined;
++ try {
++  if(signal?.aborted) throw new Error("Execution cancelled");
++  const result=invoke(name,input);
++  if("results" in result) { count=result.results.length; select(result.results.map(a=>a.id)); }
++  else if(name === "get_article") select([result.id]);
++  success=true; return result;
++ } catch(e) { error=e instanceof Error?e.message:"Execution failed"; throw e; }
++ finally { window.dispatchEvent(new CustomEvent(ACTIVITY,{detail:{tool:name,timestamp:new Date().toISOString(),input,durationMs:performance.now()-start,success,count,error,mode}})); }
++}
+diff --git a/tests/webmcp.test.ts b/tests/webmcp.test.ts
+new file mode 100644
+index 0000000..6727245
+--- /dev/null
++++ b/tests/webmcp.test.ts
+@@ -0,0 +1,12 @@
++import {describe,it,expect} from "vitest";
++import {articles,getArticle,citeArticle} from "../lib/webmcp/content";
++import {invoke} from "../lib/webmcp/tools";
++import {register} from "../lib/webmcp/register";
++describe("WebMCP real-content contracts",()=>{
++ it("has unique real IDs and canonical entry destinations",()=>{expect(new Set(articles.map(a=>a.id)).size).toBe(articles.length);expect(articles.length).toBeGreaterThan(50);for(const a of articles){expect(a.summary.length).toBeGreaterThan(0);expect(a.url).toContain('?entry=');expect(getArticle(a.id)).toBe(a);}});
++ it("finds GPU memory and caps output",()=>{const r=invoke("search_articles",{query:"GPU memory",limit:3});expect("results" in r&&r.results.length).toBe(3);expect(invoke("search_articles",{query:"zxqvnonexistent"})).toEqual({results:[]});});
++ it("rejects malformed input without coercion",()=>{for(const input of [null,[],{}, {query:" "},{query:"memory",limit:0},{query:"memory",limit:1.5},{query:"memory",extra:true}])expect(()=>invoke("search_articles",input)).toThrow();expect(()=>invoke("get_article",{id:"missing"})).toThrow();expect(()=>invoke("cite_article",{id:articles[0].id,format:"IEEE"})).toThrow();});
++ it("cites deterministically without invented author or date",()=>{for(const format of ["APA","MLA","Chicago"]){const c=citeArticle(articles[0].id,format);expect(c).toEqual(citeArticle(articles[0].id,format));expect(c.citation).toContain(articles[0].url);}expect(citeArticle(articles[0].id,"APA").citation).toContain("n.d.");});
++ it("registers three tools with one lifetime signal",async()=>{const controller=new AbortController();const calls:unknown[]=[];const registered:string[]=[];await register({registerTool:async(tool,options)=>{expect(options.signal).toBe(controller.signal);calls.push(tool);}},controller.signal,n=>registered.push(n));expect(calls.length).toBe(3);expect(registered).toEqual(["search_articles","get_article","cite_article"]);});
++ it("does not register after cancellation and propagates failures",async()=>{const c=new AbortController();c.abort();await register({registerTool:async()=>{throw Error("unexpected");}},c.signal,()=>{});await expect(register({registerTool:async()=>{throw Error("registration rejected");}},new AbortController().signal,()=>{})).rejects.toThrow("registration rejected");});
++});

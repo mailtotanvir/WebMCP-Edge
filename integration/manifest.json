@@ -1,0 +1,7 @@
+{
+  "upstream": "https://github.com/mailtotanvir/AI-Engineering-Visual-Guide.git",
+  "baseCommit": "c8c5e2b6195e8f725f0ccba86b2b3d29c16514df",
+  "implementationCommit": "1bf88d7b366475d46a41ccb8bc8bfec51f7bdeb7",
+  "patch": "webmcp.patch",
+  "status": "local review; not pushed or published"
+}

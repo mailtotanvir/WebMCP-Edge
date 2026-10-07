@@ -1,0 +1,27 @@
+
+> cuda-visual-encyclopedia@0.1.0 test
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 <encyclopedia-checkout>
+
+ ✓ tests/inference-handbook.test.ts (21 tests) 12ms
+ ✓ tests/infra.test.ts (15 tests) 29ms
+ ✓ tests/inference.test.ts (16 tests) 45ms
+ ✓ tests/safety.test.ts (11 tests) 38ms
+ ✓ tests/scenes.test.ts (15 tests) 22ms
+ ✓ tests/posttrain.test.ts (33 tests) 52ms
+ ✓ tests/evals.test.ts (41 tests) 61ms
+ ✓ tests/training.test.ts (18 tests) 19ms
+ ✓ tests/worlds.test.ts (6 tests) 17ms
+ ✓ tests/atlas.test.ts (16 tests) 14ms
+ ✓ tests/journey.test.ts (11 tests) 64ms
+ ✓ tests/webmcp.test.ts (6 tests) 37ms
+ ✓ tests/engine.test.ts (9 tests) 135ms
+
+ Test Files  13 passed (13)
+      Tests  218 passed (218)
+   Start at  22:27:13
+   Duration  1.58s (transform 1.69s, setup 0ms, collect 2.64s, tests 543ms, environment 4ms, prepare 1.98s)
+
