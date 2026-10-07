@@ -1,0 +1,4 @@
+2026-10-06: Playwright Chromium smoke check against local production export
+{ nativeContextPresent: false, pageErrors: [] }
+CUDA entry selection/local tool execution and Inference KV-cache search/selection passed.
+Live HTTPS encyclopedia retry: passed with identical result; document.modelContext absent.

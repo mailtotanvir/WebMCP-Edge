@@ -1,17 +1,21 @@
 # Release status — 2026-10-06
 
-The user authorized proceeding with changes and publication. No additional user approval is pending.
+The user authorized publication and chose MIT for original code/package material. Existing local commits were preserved; the newer blog upstream was merged, retaining both timeline cards.
 
-Prepared locally:
-- Encyclopedia integration on research/webmcp-edge.
-- Blog article at webmcp-edge/, homepage listing, linked local evidence and design document.
-- Research package with integration patch and reproduction instructions.
+Published:
+- Encyclopedia integration commit `1bf88d7b366475d46a41ccb8bc8bfec51f7bdeb7` on upstream main. GitHub Actions run 37563836162 passed tests, build, and Pages deployment. PR #1 was created before the authorized main push.
+- Canonical article: https://mailtotanvir.github.io/webmcp-edge/
+- Public research package: https://github.com/mailtotanvir/WebMCP-Edge
+- Encyclopedia: https://mailtotanvir.github.io/AI-Engineering-Visual-Guide/
+- Blog upstream was reconciled through merge commit fbb0f94; publication/evidence commits c7e5a0f and e49a081 are on remote main.
 
-External blockers:
-- github.com DNS resolution fails for curl and SSH.
-- gh auth status reports an invalid GitHub token.
-- Chromium launch remains denied socket operations; ordinary and native browser checks are unperformed.
+Verified:
+- GitHub DNS, authentication, SSH fetch/push, and anonymous HTTP access work.
+- Anonymous homepage listing, article, article JavaScript, validation report, design document, and public repository return HTTP 200.
+- Ordinary Playwright Chromium smoke checks passed against both the local production export and live encyclopedia: CUDA initial selection/local execution and Inference KV-cache search/selection; no page errors. document.modelContext was absent.
+- Reproduction script successfully cloned the upstream, checked out the pinned base, and applied the integration patch.
+- Original code/package is MIT licensed. LICENSING.md excludes upstream materials and third-party rights; no license was found for the upstream encyclopedia.
 
-No remote changes, live deployment, or public research repository creation have succeeded. Do not describe native interoperability or agent performance as established. The staged article presents local implementation findings only.
-
-When connectivity and authentication are restored, refresh upstream heads and reconcile before pushing. Create the public research repository after clarifying the source/patch licensing convention. Push the encyclopedia integration for review or approved main deployment, then deploy the blog article and verify anonymous live access. Run the browser matrix and expand findings only when evidence exists.
+Remaining research limitations:
+- Native WebMCP interoperability, experimental browser matrix, and browser-agent performance comparison remain unmeasured.
+- Do not describe mock registration or ordinary Chromium harness results as native interoperability or agent performance evidence.
