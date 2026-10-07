@@ -12,7 +12,7 @@ This is engineering validation, not a benchmark or native browser-agent experime
 | Native WebMCP/browser-agent comparison | Not run |
 | Ordinary-browser/rendered UI smoke checks | Passed on retry: Playwright Chromium, CUDA entry selection and local search, Inference KV-cache search/selection; no page errors; document.modelContext absent |
 | Root-path production export | Not run; project-subpath export was tested |
-| GitHub Pages deployment | Publication authorized; deployment initiated 2026-10-06 |
+| GitHub Pages deployment | Encyclopedia deployment passed; blog article subsequently withdrawn |
 | Clean network dependency installation | Not run; local dependencies copied into writable isolated checkout |
 
 Test correction: one initial contract assumed all source entries contained technical points. Some legitimate source records have an empty points array. The final contract requires real summaries and preserves source content instead of inventing points.
@@ -24,3 +24,5 @@ No timings or agent-step counts have been manufactured. The interactive article 
 Raw successful test/build logs are included alongside this report. They describe local execution, not remote deployment.
 
 Retry on 2026-10-06: ordinary Chromium smoke check passed with a correctly mounted project-subpath export. Native WebMCP was unavailable. The first retry used an incorrect preview mount and timed out; correcting the mount resolved it.
+
+Privacy note: local checkout paths in the accompanying logs have been replaced with `<encyclopedia-checkout>`. Test results are unchanged.
