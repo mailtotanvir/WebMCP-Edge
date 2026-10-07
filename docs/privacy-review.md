@@ -17,6 +17,6 @@ README links, article JavaScript syntax, and patch reproduction were checked. Re
 
 ## Limits and release gate
 
-The research repository remains private. Publication and the withdrawn article require owner review. A history rewrite changes commit and tag IDs; consumers of old clones must use a fresh checkout or reconcile their history before pushing.
+The owner approved public visibility after sanitization and README review. The withdrawn article still requires separate owner review before publication. A history rewrite changes commit and tag IDs; consumers of old clones must use a fresh checkout or reconcile their history before pushing.
 
 Previously published objects can remain in GitHub caches, inaccessible object storage, external clones, or forks. Rewriting branch/tag refs does not guarantee erasure. The public blog repository and encyclopedia repository are separate and have not had their history rewritten by this cleanup.

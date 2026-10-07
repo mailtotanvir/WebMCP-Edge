@@ -1,6 +1,6 @@
-# Review status
+# Repository and article status
 
-The research repository must remain private. Sanitization and README improvements may be pushed to the private repository. Making it public or publishing the article requires user review and explicit approval.
+The owner explicitly approved making the sanitized research repository public. GitHub visibility is public and anonymous repository access returned HTTP 200. The blog article remains withdrawn; publishing it requires separate owner review and explicit approval.
 
 The blog article and homepage listing have been removed; the article URL returned HTTP 404 after deployment. The article source in this package is an unapproved draft and needs substantial editorial revision before publication.
 

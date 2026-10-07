@@ -5,7 +5,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-111111?logo=nextdotjs&logoColor=white)
 ![Tools](https://img.shields.io/badge/browser%20tools-search%20%C2%B7%20retrieve%20%C2%B7%20cite-4FD6E0)
 [![Validation](https://img.shields.io/badge/recorded%20tests-218%20passed-46E39B)](evaluation/validation.md)
-[![Status](https://img.shields.io/badge/status-private%20review-FFC46B)](docs/release-status.md)
+[![Status](https://img.shields.io/badge/status-research%20prototype-FFC46B)](docs/release-status.md)
 
 **A website exposing its own content as browser tools: search real CUDA and Inference concepts, retrieve the source record, and produce a citation through explicit application operations.**
 
@@ -13,7 +13,7 @@ A browser agent looking for GPU memory concepts must interpret navigation, open 
 
 The visual Atlas and the tool interface use the same source content. A search can return structured records and highlight a matching entry in the mounted Atlas. Retrieval preserves the original explanation and technical points. Citation uses the actual title and URL, leaving unavailable bibliographic fields missing.
 
-> The application functions and ordinary Chromium harness have been checked. Native WebMCP interoperability and browser-agent performance remain unmeasured. This repository is a private review candidate; the accompanying article is an unapproved draft.
+> The application functions and ordinary Chromium harness have been checked. Native WebMCP interoperability and browser-agent performance remain unmeasured. This repository is a public research prototype; the accompanying article is an unapproved draft.
 
 ## Why expose the website's own operations?
 
@@ -94,11 +94,11 @@ See the [validation report](evaluation/validation.md) for check details and limi
 
 ## Quick start
 
-Requirements: Git, Node.js 20 or later, npm, and access to GitHub and npm. The repository is private, so cloning requires an authorized GitHub account.
+Requirements: Git, Node.js 20 or later, npm, and access to GitHub and npm. The repository is public.
 
 ```bash
-# Clone the research package using your configured GitHub SSH access.
-git clone git@github.com:mailtotanvir/WebMCP-Edge.git
+# Clone the public research package.
+git clone https://github.com/mailtotanvir/WebMCP-Edge.git
 cd WebMCP-Edge
 
 # Fetch the pinned encyclopedia and apply the integration patch.
@@ -182,7 +182,7 @@ No native or DOM-agent runs have been collected. No latency, action savings, or 
 | [evaluation/](evaluation/) | Protocol, validation report, and recorded evidence |
 | [docs/webmcp-design.md](docs/webmcp-design.md) | Integration design and rollout boundary |
 | [docs/privacy-review.md](docs/privacy-review.md) | Sanitization changes, audit scope, and historical exposure limits |
-| [docs/release-status.md](docs/release-status.md) | Current private-review and publication gate |
+| [docs/release-status.md](docs/release-status.md) | Current repository and article publication status |
 | [blog/](blog/) | Withdrawn article draft and local preview assets |
 | [CITATION.cff](CITATION.cff) | Research-package citation metadata |
 
@@ -195,7 +195,7 @@ Preview the article draft from this repository with `python3 -m http.server 4174
 - Citation completeness depends on source metadata. Existing references inside an entry are not treated as the entry's authors.
 - Runtime schemas constrain arguments but do not authenticate a caller or make page descriptions and content trustworthy. Origin mediation and real browser cleanup remain unverified.
 - The ordinary Chromium check covers selected interactions, not a full browser matrix, accessibility audit, or agent evaluation.
-- Publication remains gated on owner review. The repository is private and the blog article is withdrawn. Sanitized history cannot guarantee erasure of previously published objects from caches or other clones.
+- The repository is public with owner approval. The blog article remains withdrawn and requires separate owner review before publication. Sanitized history cannot guarantee erasure of previously published objects from caches or other clones.
 
 ## License and references
 
