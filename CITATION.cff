@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite this implementation findings package if you use it."
+title: "WebMCP-Edge: Turning a Website into an Agent-Native Interface"
+authors:
+  - family-names: Ahmed
+    given-names: Tanvir
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/mailtotanvir/WebMCP-Edge"
+url: "https://mailtotanvir.github.io/webmcp-edge/"
